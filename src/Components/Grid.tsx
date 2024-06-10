@@ -24,7 +24,7 @@ const Grid: React.FC<Props> = ({
 
       for (let x = 0; x < height; x++) {
         const index = x + y * width;
-        assembledMatrix[y][x] = max - 1 === index ? null : (index + 1);
+        assembledMatrix[y][x] = max - 1 === index ? null : index + 1;
       }
     }
 
@@ -35,19 +35,21 @@ const Grid: React.FC<Props> = ({
     <>
       <div
         {...props}
-        className={`${className} grid grid-cols-${width} grid-rows-${height} gap-4`}
+        className={`${className} grid grid-cols-${width} grid-rows-${height} gap-4 *:aspect-square *:rounded-md *:flex *:justify-center *:items-center *:bg-amber-700 dark:*:bg-amber-300`}
       >
-        {matrix.map((row) =>
-          row.map((column) => (
-            column !== null ? (
+        {matrix.map((columns, y) =>
+          columns.map((cell, x) =>
+            cell !== null ? (
               <div
-                className="aspect-square row-span-1 col-span-1 rounded-md flex justify-center items-center bg-amber-700 dark:bg-amber-300"
-                key={column}
+                className={`row-start-${y + 1} row-end-${y + 2} col-start-${
+                  x + 1
+                } col-end-${x + 2}`}
+                key={x}
               >
-                {column}
+                {cell}
               </div>
             ) : null
-          ))
+          )
         )}
       </div>
     </>
