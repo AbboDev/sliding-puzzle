@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getRandomSortedValues } from "../Utilities/getRandomSortedValues";
 
 export interface Props extends React.HTMLAttributes<HTMLDivElement> {
   width?: number;
   height?: number;
+  onWin: () => void;
 }
 
 interface Matrix<T = unknown> extends Array<Array<T>> {}
@@ -11,10 +12,12 @@ interface Matrix<T = unknown> extends Array<Array<T>> {}
 const Grid: React.FC<Props> = ({
   width = 3,
   height = 3,
+  onWin,
   className,
   ...props
 }) => {
   const [matrix, setMatrix] = useState<Matrix<number | null>>([[]]);
+  const correctMatrix = useRef<Matrix<number | null>>([[]]);
 
   useEffect(() => {
     const length = width * height;
@@ -25,19 +28,35 @@ const Grid: React.FC<Props> = ({
     );
 
     const assembledMatrix: Matrix<number | null> = [];
+    const endMatrix: Matrix<number | null> = [];
 
     for (let y = 0; y < width; y++) {
       assembledMatrix[y] = [];
+      endMatrix[y] = [];
 
       for (let x = 0; x < height; x++) {
         const index = x + y * width;
 
         assembledMatrix[y][x] = values[index];
+        endMatrix[y][x] = index === last ? null : index + 1;
       }
     }
 
     setMatrix(assembledMatrix);
+    correctMatrix.current = endMatrix;
   }, [width, height]);
+
+  useEffect(() => {
+    const final = correctMatrix.current.every((row, y) =>
+      row.every((column, x) => {
+        return matrix[y][x] === column;
+      })
+    );
+
+    if (final) {
+      onWin();
+    }
+  }, [matrix, onWin]);
 
   const movePiece = (currentY: number, currentX: number) => {
     const [y, x] = findEmptyCell();
