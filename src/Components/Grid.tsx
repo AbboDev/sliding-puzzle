@@ -27,11 +27,11 @@ const Grid: React.FC<Props> = ({
     const assembledMatrix: Matrix<number | null> = [];
     const endMatrix: Matrix<number | null> = [];
 
-    for (let y = 0; y < width; y++) {
+    for (let y = 0; y < height; y++) {
       assembledMatrix[y] = [];
       endMatrix[y] = [];
 
-      for (let x = 0; x < height; x++) {
+      for (let x = 0; x < width; x++) {
         const index = x + y * width;
 
         assembledMatrix[y][x] = values[index];
