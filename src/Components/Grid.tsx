@@ -36,26 +36,36 @@ const Grid: React.FC<Props> = ({
   const style = {
     "--puzzle-width": width,
     "--puzzle-height": height,
-    "grid-template-columns": "repeat(var(--puzzle-width, 1), minmax(0, 1fr))",
-    "grid-template-rows": "repeat(var(--puzzle-height, 1), minmax(0, 1fr))",
+    gridTemplateColumns: "repeat(var(--puzzle-width, 1), minmax(0, 1fr))",
+    gridTemplateRows: "repeat(var(--puzzle-height, 1), minmax(0, 1fr))",
   } as React.CSSProperties;
 
   return (
     <>
       <div {...props} className={gridClassName} style={style}>
         {matrix.map((columns, y) =>
-          columns.map((cell, x) =>
-            cell !== null ? (
-              <div
-                className={`row-start-${y + 1} row-end-${
-                  y + 2
-                } col-start-${x + 1} col-end-${x + 2}`}
+          columns.map((cell, x) => {
+            if (!cell) {
+              return null;
+            }
+
+            const style = {
+              gridRowStart: y + 1,
+              gridRowEnd: y + 2,
+              gridColumnStart: x + 1,
+              gridColumnEnd: x + 2,
+            } as React.CSSProperties;
+
+            return (
+              <button
                 key={x}
+                type="button"
+                style={style}
               >
                 {cell}
-              </div>
-            ) : null
-          )
+              </button>
+            );
+          })
         )}
       </div>
     </>
