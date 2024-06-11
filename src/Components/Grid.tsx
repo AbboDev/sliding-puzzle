@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getRandomSortedValues } from "../Utilities/getRandomSortedValues";
 
 export interface Props extends React.HTMLAttributes<HTMLDivElement> {
   width?: number;
@@ -16,15 +17,22 @@ const Grid: React.FC<Props> = ({
   const [matrix, setMatrix] = useState<Matrix<number | null>>([[]]);
 
   useEffect(() => {
+    const length = width * height;
+    const last = length - 1;
+
+    const values = getRandomSortedValues(length, (_, index) =>
+      index === last ? null : index + 1
+    );
+
     const assembledMatrix: Matrix<number | null> = [];
-    const max = width * height;
 
     for (let y = 0; y < width; y++) {
       assembledMatrix[y] = [];
 
       for (let x = 0; x < height; x++) {
         const index = x + y * width;
-        assembledMatrix[y][x] = max - 1 === index ? null : index + 1;
+
+        assembledMatrix[y][x] = values[index];
       }
     }
 
