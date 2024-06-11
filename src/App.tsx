@@ -1,9 +1,6 @@
-import { useState } from "react";
-import Grid from "./Components/Grid";
+import Game from "./Components/Game";
 
 function App() {
-  const [win, setWin] = useState<boolean>(false)
-
   return (
     <>
       <main className="bg-sky-700 dark:bg-sky-950 min-h-screen text-white py-3">
@@ -15,17 +12,7 @@ function App() {
             empty slot to align the grid
           </p>
 
-          <section className="max-w-2xl mx-auto mt-3 text-xl relative select-none">
-            <Grid
-              className={`relative z-0 ${win ? "blur-sm" : "blur-none"}`}
-              onWin={() => setWin(true)}
-            />
-            {win && (
-              <div className="absolute inset-0 z-1 uppercase flex justify-center items-center">
-                You Won!
-              </div>
-            )}
-          </section>
+          <Game />
         </section>
       </main>
     </>
