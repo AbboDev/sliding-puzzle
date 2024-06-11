@@ -31,6 +31,54 @@ const Grid: React.FC<Props> = ({
     setMatrix(assembledMatrix);
   }, [width, height]);
 
+  const movePiece = (currentY: number, currentX: number) => {
+    const [y, x] = findEmptyCell();
+
+    if (y === null || x === null) {
+      // TODO: feedback for missing empty slot
+      return;
+    }
+
+    const diffX = x - currentX;
+    const diffY = y - currentY;
+    const diff = Math.abs(diffX) + Math.abs(diffY);
+    if (diff > 1) {
+      // TODO: feedback for no movement
+      return;
+    }
+
+    const newX = currentX + diffX;
+    const newY = currentY + diffY;
+
+    const newMatrix = [...matrix];
+    newMatrix[newY][newX] = newMatrix[currentY][currentX];
+    newMatrix[currentY][currentX] = null;
+
+    setMatrix(newMatrix);
+  };
+
+  const findEmptyCell = () => {
+    let x: number | null = null;
+
+    const row = matrix.find((row) => {
+      const index = row.indexOf(null);
+      if (index > -1) {
+        x = index;
+        return true;
+      }
+
+      return false;
+    });
+
+    if (!row || x === null) {
+      return [null, null];
+    }
+
+    const y = matrix.indexOf(row);
+
+    return [y, x];
+  };
+
   const gridClassName = `${className} grid gap-4 *:aspect-square *:rounded-md *:flex *:justify-center *:items-center *:bg-amber-700 dark:*:bg-amber-300 hover:*:shadow-amber-900 hover:dark:*:shadow-amber-500 *:cursor-pointer hover:*:shadow-sm *:transition-shadow`;
 
   const style = {
@@ -61,6 +109,7 @@ const Grid: React.FC<Props> = ({
                 key={x}
                 type="button"
                 style={style}
+                onClick={() => movePiece(y, x)}
               >
                 {cell}
               </button>
