@@ -93,7 +93,7 @@ const Grid: React.FC<Props> = ({
       <div {...props} className={gridClassName} style={style}>
         {matrix.map((columns, y) =>
           columns.map((cell, x) => {
-            if (!cell) {
+            if (cell === null) {
               return null;
             }
 
