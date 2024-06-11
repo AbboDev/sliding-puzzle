@@ -31,7 +31,7 @@ const Grid: React.FC<Props> = ({
     setMatrix(assembledMatrix);
   }, [width, height]);
 
-  const gridClassName = `${className} grid gap-4 *:aspect-square *:rounded-md *:flex *:justify-center *:items-center *:bg-amber-700 dark:*:bg-amber-300`;
+  const gridClassName = `${className} grid gap-4 *:aspect-square *:rounded-md *:flex *:justify-center *:items-center *:bg-amber-700 dark:*:bg-amber-300 hover:*:shadow-amber-900 hover:dark:*:shadow-amber-500 *:cursor-pointer hover:*:shadow-sm *:transition-shadow`;
 
   const style = {
     "--puzzle-width": width,
@@ -47,9 +47,9 @@ const Grid: React.FC<Props> = ({
           columns.map((cell, x) =>
             cell !== null ? (
               <div
-                className={`row-start-${y + 1} row-end-${y + 2} col-start-${
-                  x + 1
-                } col-end-${x + 2}`}
+                className={`row-start-${y + 1} row-end-${
+                  y + 2
+                } col-start-${x + 1} col-end-${x + 2}`}
                 key={x}
               >
                 {cell}
