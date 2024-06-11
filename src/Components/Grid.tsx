@@ -1,108 +1,18 @@
-import { useEffect, useRef, useState } from "react";
-import { getRandomSortedValues } from "../Utilities/getRandomSortedValues";
 import { GridSize, Matrix } from "../types";
 
 export interface Props extends React.HTMLAttributes<HTMLDivElement>, GridSize {
-  onWin: () => void;
+  matrix: Matrix<number | null>;
+  movePiece: (y: number, x: number) => void;
 }
 
 const Grid: React.FC<Props> = ({
   width,
   height,
-  onWin,
+  matrix,
+  movePiece,
   className,
   ...props
 }) => {
-  const [matrix, setMatrix] = useState<Matrix<number | null>>([[]]);
-  const correctMatrix = useRef<Matrix<number | null>>([[]]);
-
-  useEffect(() => {
-    const length = width * height;
-    const last = length - 1;
-
-    const values = getRandomSortedValues(length, (_, index) =>
-      index === last ? null : index + 1
-    );
-
-    const assembledMatrix: Matrix<number | null> = [];
-    const endMatrix: Matrix<number | null> = [];
-
-    for (let y = 0; y < height; y++) {
-      assembledMatrix[y] = [];
-      endMatrix[y] = [];
-
-      for (let x = 0; x < width; x++) {
-        const index = x + y * width;
-
-        assembledMatrix[y][x] = values[index];
-        endMatrix[y][x] = index === last ? null : index + 1;
-      }
-    }
-
-    setMatrix(assembledMatrix);
-    correctMatrix.current = endMatrix;
-  }, [width, height]);
-
-  useEffect(() => {
-    const final = correctMatrix.current.every((row, y) =>
-      row.every((column, x) => {
-        return matrix[y][x] === column;
-      })
-    );
-
-    if (final) {
-      onWin();
-    }
-  }, [matrix, onWin]);
-
-  const movePiece = (currentY: number, currentX: number) => {
-    const [y, x] = findEmptyCell();
-
-    if (y === null || x === null) {
-      // TODO: feedback for missing empty slot
-      return;
-    }
-
-    const diffX = x - currentX;
-    const diffY = y - currentY;
-    const diff = Math.abs(diffX) + Math.abs(diffY);
-    if (diff > 1) {
-      // TODO: feedback for no movement
-      return;
-    }
-
-    const newX = currentX + diffX;
-    const newY = currentY + diffY;
-
-    const newMatrix = [...matrix];
-    newMatrix[newY][newX] = newMatrix[currentY][currentX];
-    newMatrix[currentY][currentX] = null;
-
-    setMatrix(newMatrix);
-  };
-
-  const findEmptyCell = () => {
-    let x: number | null = null;
-
-    const row = matrix.find((row) => {
-      const index = row.indexOf(null);
-      if (index > -1) {
-        x = index;
-        return true;
-      }
-
-      return false;
-    });
-
-    if (!row || x === null) {
-      return [null, null];
-    }
-
-    const y = matrix.indexOf(row);
-
-    return [y, x];
-  };
-
   const gridClassName = `${className} grid gap-4 *:aspect-square *:rounded-md *:flex *:justify-center *:items-center text-sky-700 dark:text-sky-950 *:bg-amber-700 dark:*:bg-amber-300 hover:*:shadow-amber-900 hover:dark:*:shadow-amber-500 *:cursor-pointer hover:*:shadow-sm *:transition-shadow`;
 
   const style = {
