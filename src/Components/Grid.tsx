@@ -31,12 +31,18 @@ const Grid: React.FC<Props> = ({
     setMatrix(assembledMatrix);
   }, [width, height]);
 
+  const gridClassName = `${className} grid gap-4 *:aspect-square *:rounded-md *:flex *:justify-center *:items-center *:bg-amber-700 dark:*:bg-amber-300`;
+
+  const style = {
+    "--puzzle-width": width,
+    "--puzzle-height": height,
+    "grid-template-columns": "repeat(var(--puzzle-width, 1), minmax(0, 1fr))",
+    "grid-template-rows": "repeat(var(--puzzle-height, 1), minmax(0, 1fr))",
+  } as React.CSSProperties;
+
   return (
     <>
-      <div
-        {...props}
-        className={`${className} grid grid-cols-${width} grid-rows-${height} gap-4 *:aspect-square *:rounded-md *:flex *:justify-center *:items-center *:bg-amber-700 dark:*:bg-amber-300`}
-      >
+      <div {...props} className={gridClassName} style={style}>
         {matrix.map((columns, y) =>
           columns.map((cell, x) =>
             cell !== null ? (
