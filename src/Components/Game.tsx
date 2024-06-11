@@ -20,7 +20,12 @@ const Game: React.FC = () => {
     const width = parseInt(formData.get("width") as string);
     const height = parseInt(formData.get("height") as string);
 
-    setSize({ width, height });
+    restartGame({ width, height });
+  }
+
+  function restartGame(newSize: GridSize) {
+    setSize((old) => ({ ...old, ...newSize }));
+    setWin(false);
   }
 
   useEffect(() => {
@@ -160,8 +165,15 @@ const Game: React.FC = () => {
           className={`relative z-0 ${win ? "blur-sm" : "blur-none"}`}
         />
         {win && (
-          <div className="absolute inset-0 z-1 uppercase flex justify-center items-center">
+          <div className="absolute inset-0 z-1 uppercase flex justify-center items-center flex-col gap-2">
             You Won!
+            <button
+              type="button"
+              onClick={() => restartGame(size)}
+              className="rounded-md bg-sky-700 dark:*:bg-sky-950 hover:shadow-sky-900 hover:dark:shadow-sky-500 cursor-pointer hover:shadow-sm transition-shadow py-2 px-4"
+            >
+              Restart!
+            </button>
           </div>
         )}
       </section>
