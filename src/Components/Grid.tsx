@@ -5,7 +5,7 @@ export interface Props extends React.HTMLAttributes<HTMLDivElement> {
   height?: number;
 }
 
-interface Matrix extends Array<Array<number | null>> {}
+interface Matrix<T = unknown> extends Array<Array<T>> {}
 
 const Grid: React.FC<Props> = ({
   width = 3,
@@ -13,10 +13,10 @@ const Grid: React.FC<Props> = ({
   className,
   ...props
 }) => {
-  const [matrix, setMatrix] = useState<Matrix>([]);
+  const [matrix, setMatrix] = useState<Matrix<number | null>>([[]]);
 
   useEffect(() => {
-    const assembledMatrix: Matrix = [];
+    const assembledMatrix: Matrix<number | null> = [];
     const max = width * height;
 
     for (let y = 0; y < width; y++) {
