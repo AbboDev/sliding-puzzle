@@ -1,17 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { getRandomSortedValues } from "../Utilities/getRandomSortedValues";
+import { GridSize, Matrix } from "../types";
 
-export interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  width?: number;
-  height?: number;
+export interface Props extends React.HTMLAttributes<HTMLDivElement>, GridSize {
   onWin: () => void;
 }
 
-interface Matrix<T = unknown> extends Array<Array<T>> {}
-
 const Grid: React.FC<Props> = ({
-  width = 3,
-  height = 3,
+  width,
+  height,
   onWin,
   className,
   ...props

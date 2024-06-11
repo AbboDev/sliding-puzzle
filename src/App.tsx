@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { GridSize } from "./types";
 import Grid from "./Components/Grid";
 
 function App() {
-  const [win, setWin] = useState<boolean>(false)
+  const [win, setWin] = useState<boolean>(false);
+  const [size, setSize] = useState<GridSize>({
+    width: 3,
+    height: 3,
+  });
 
   return (
     <>
@@ -17,6 +22,8 @@ function App() {
 
           <section className="max-w-2xl mx-auto mt-3 text-xl relative select-none">
             <Grid
+              width={size.width}
+              height={size.height}
               className={`relative z-0 ${win ? "blur-sm" : "blur-none"}`}
               onWin={() => setWin(true)}
             />
