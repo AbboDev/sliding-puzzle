@@ -79,18 +79,39 @@ const Game: React.FC = () => {
 
     const diffX = x - currentX;
     const diffY = y - currentY;
-    const diff = Math.abs(diffX) + Math.abs(diffY);
-    if (diff > 1) {
+    const movement = Math.abs(diffX) + Math.abs(diffY);
+
+    const isMovingX = diffX !== 0;
+    const isMovingY = diffY !== 0;
+    // The movement can be in only one direction
+    if (isMovingX && isMovingY) {
       // TODO: feedback for no movement
       return;
     }
 
-    const newX = currentX + diffX;
-    const newY = currentY + diffY;
-
+    // Create a copy of the matrix
     const newMatrix = [...matrix];
-    newMatrix[newY][newX] = newMatrix[currentY][currentX];
-    newMatrix[currentY][currentX] = null;
+
+    // For each movement requested translate the block of one index
+    for (let index = movement; index > 0; index--) {
+      let movementX = 0;
+      if (isMovingX) {
+        movementX += index * Math.sign(diffX);
+      }
+
+      let movementY = 0;
+      if (isMovingY) {
+        movementY += index * Math.sign(diffY);
+      }
+
+      const newX = currentX + movementX;
+      const newY = currentY + movementY;
+      const newX2 = newX - Math.sign(diffX);
+      const newY2 = newY - Math.sign(diffY);
+
+      newMatrix[newY][newX] = newMatrix[newY2][newX2];
+      newMatrix[newY2][newX2] = null;
+    }
 
     setMatrix(newMatrix);
   };
