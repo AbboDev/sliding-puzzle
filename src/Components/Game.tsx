@@ -3,9 +3,14 @@ import { GridSize, Matrix } from "../types";
 import { getRandomSortedValues } from "../Utilities/getRandomSortedValues";
 import Grid from "./Grid";
 
+type GameMatrix = Matrix<number | null>;
+
 const Game: React.FC = () => {
-  const [matrix, setMatrix] = useState<Matrix<number | null>>([[]]);
-  const correctMatrix = useRef<Matrix<number | null>>([[]]);
+  const [matrix, setMatrix] = useState<GameMatrix>([[]]);
+  const [history, setHistory] = useState<Array<GameMatrix>>([]);
+
+  const correctMatrix = useRef<GameMatrix>([[]]);
+
   const [win, setWin] = useState<boolean>(false);
   const [size, setSize] = useState<GridSize>({
     width: 3,
@@ -20,15 +25,20 @@ const Game: React.FC = () => {
     const width = parseInt(formData.get("width") as string);
     const height = parseInt(formData.get("height") as string);
 
-    restartGame({ width, height });
+    if (size.width !== width || size.height !== height) {
+      setSize({ width, height });
+    }
+
+    restartGame();
   }
 
-  function restartGame(newSize: GridSize) {
-    setSize((old) => ({ ...old, ...newSize }));
+  function restartGame() {
     setWin(false);
+    setHistory([]);
+    setupGame();
   }
 
-  useEffect(() => {
+  function setupGame() {
     const { width, height } = size;
 
     const length = width * height;
@@ -38,8 +48,8 @@ const Game: React.FC = () => {
       index === last ? null : index + 1
     );
 
-    const assembledMatrix: Matrix<number | null> = [];
-    const endMatrix: Matrix<number | null> = [];
+    const assembledMatrix: GameMatrix = [];
+    const endMatrix: GameMatrix = [];
 
     for (let y = 0; y < height; y++) {
       assembledMatrix[y] = [];
@@ -55,7 +65,9 @@ const Game: React.FC = () => {
 
     setMatrix(assembledMatrix);
     correctMatrix.current = endMatrix;
-  }, [size]);
+  }
+
+  useEffect(setupGame, [size]);
 
   useEffect(() => {
     const final = correctMatrix.current.every((row, y) =>
@@ -79,20 +91,42 @@ const Game: React.FC = () => {
 
     const diffX = x - currentX;
     const diffY = y - currentY;
-    const diff = Math.abs(diffX) + Math.abs(diffY);
-    if (diff > 1) {
+    const movement = Math.abs(diffX) + Math.abs(diffY);
+
+    const isMovingX = diffX !== 0;
+    const isMovingY = diffY !== 0;
+    // The movement can be in only one direction
+    if (isMovingX && isMovingY) {
       // TODO: feedback for no movement
       return;
     }
 
-    const newX = currentX + diffX;
-    const newY = currentY + diffY;
-
+    // Create a copy of the matrix
     const newMatrix = [...matrix];
-    newMatrix[newY][newX] = newMatrix[currentY][currentX];
-    newMatrix[currentY][currentX] = null;
+
+    // For each movement requested translate the block of one index
+    for (let index = movement; index > 0; index--) {
+      let movementX = 0;
+      if (isMovingX) {
+        movementX += index * Math.sign(diffX);
+      }
+
+      let movementY = 0;
+      if (isMovingY) {
+        movementY += index * Math.sign(diffY);
+      }
+
+      const newX = currentX + movementX;
+      const newY = currentY + movementY;
+      const newX2 = newX - Math.sign(diffX);
+      const newY2 = newY - Math.sign(diffY);
+
+      newMatrix[newY][newX] = newMatrix[newY2][newX2];
+      newMatrix[newY2][newX2] = null;
+    }
 
     setMatrix(newMatrix);
+    setHistory((history) => [...history, matrix]);
   };
 
   const findEmptyCell = () => {
@@ -166,16 +200,22 @@ const Game: React.FC = () => {
         />
         {win && (
           <div className="absolute inset-0 z-1 uppercase flex justify-center items-center flex-col gap-2">
-            You Won!
+            You Won in {history.length} moves!
             <button
               type="button"
-              onClick={() => restartGame(size)}
+              onClick={restartGame}
               className="rounded-md bg-sky-700 dark:*:bg-sky-950 hover:shadow-sky-900 hover:dark:shadow-sky-500 cursor-pointer hover:shadow-sm transition-shadow py-2 px-4"
             >
               Restart!
             </button>
           </div>
         )}
+
+        <div>
+          {history.length
+            ? `Move N #${history.length}`
+            : "Make your first move!"}
+        </div>
       </section>
     </>
   );
